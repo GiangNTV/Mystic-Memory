@@ -14,7 +14,6 @@
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="planetary_upgrade.css">
     <!-- html2canvas for exporting -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <!-- Astronomy Engine -->
@@ -429,17 +428,31 @@
     </div>
 
     <!-- Scripts -->
-    <script src="forecast_data.js"></script>
+    <!-- Data Files -->
+    <script src="data/forecast_data.js"></script>
+    <script src="data/tarot_combinations.js"></script>
+    <script src="data/tarot_interpretations_deep.js"></script>
+    <script src="data/lenormand_interpretations.js"></script>
+    <!-- Core App -->
     <script src="app.js"></script>
-    <!-- Interpretation Systems -->
-    <script src="tarot_interpretations_deep.js"></script>
-    <script src="tarot_combinations.js"></script>
-    <script src="lenormand_interpretations.js"></script>
-    <script src="lenormand_integration_patch.js"></script>
-    <!-- UI Helpers & Improvements -->
-    <script src="ui_helpers.js"></script>
-    <!-- Enhanced Vietnamese Language (Load Last) -->
+    <!-- Patches: Lenormand integration + UI helpers (merged) -->
+    <script src="app_patches.js"></script>
+    <!-- Enhanced Vietnamese (load after app + patches) -->
     <script src="enhanced_vietnamese.js"></script>
+    <!-- AI Fallback: Tarot + Lenormand (merged, load last) -->
+    <script src="ai_fallback.js"></script>
+    <!-- Reversed Card Data — Batch 1: Major Arcana -->
+    <script src="reversed_major_patch.js"></script>
+    <!-- Reversed Card Data — Batch 2: Wands -->
+    <script src="reversed_wands_patch.js"></script>
+    <!-- Reversed Card Data — Batch 3: Cups -->
+    <script src="reversed_cups_patch.js"></script>
+    <!-- Reversed Card Data — Batch 4: Swords -->
+    <script src="reversed_swords_patch.js"></script>
+    <!-- Reversed Card Data — Batch 5: Pentacles -->
+    <script src="reversed_pentacles_patch.js"></script>
+    <!-- Reversed Display Patch -->
+    <script src="reversed_display_patch.js"></script>
 </body>
 
 </html>

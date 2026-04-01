@@ -480,3 +480,189 @@ body {
         font-size: 2rem;
     }
 }
+/* ===========================================
+   PLANETARY UPGRADE STYLES (merged)
+   =========================================== */
+/* Planetary Upgrade Styles */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.2);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.4);
+}
+
+#zodiac-wheel-container {
+    background: radial-gradient(circle at center, rgba(67, 56, 202, 0.15) 0%, rgba(15, 23, 42, 0) 70%),
+        radial-gradient(circle at 30% 30%, rgba(245, 158, 11, 0.05) 0%, rgba(15, 23, 42, 0) 50%),
+        radial-gradient(circle at 70% 70%, rgba(99, 102, 241, 0.05) 0%, rgba(15, 23, 42, 0) 50%);
+    border-radius: 50%;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+#zodiac-wheel-container svg {
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+}
+
+.zodiac-sign-arc {
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
+
+.zodiac-sign-arc:hover {
+    fill-opacity: 0.3 !important;
+    filter: brightness(1.2);
+}
+
+.planet-marker {
+    transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.planet-marker.sun-marker {
+    filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.8));
+}
+
+.planet-marker.sun-marker circle {
+    stroke-width: 3;
+    animation: sun-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sun-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+.planet-marker:hover {
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+.transit-item {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.transit-item::before {
+    content: '';
+    position: absolute;
+    left: -5.5px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    background: #f59e0b;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #f59e0b;
+}
+
+.transit-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.5rem;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.transit-card:hover {
+    background: rgba(245, 158, 11, 0.05);
+    border-color: rgba(245, 158, 11, 0.3);
+    transform: translateX(5px);
+}
+
+.transit-date {
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    color: #f59e0b;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.planet-card-mini {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.25rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.4s ease;
+}
+
+.planet-card-mini:hover {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.3);
+    transform: translateY(-4px);
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 120s linear infinite;
+}
+
+/* Detailed Transit Advice */
+.transit-advice-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(245, 158, 11, 0.03);
+    border-radius: 1rem;
+    border: 1px solid rgba(245, 158, 11, 0.05);
+}
+
+.advice-section {
+    margin-top: 0.75rem;
+}
+
+.advice-header {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(245, 158, 11, 0.6);
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.advice-content {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.days-badge {
+    padding: 0.25rem 0.5rem;
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}

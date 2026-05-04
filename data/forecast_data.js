@@ -60,3 +60,8 @@ const forecastAdvice = {
         }
     }
 };
+
+// Expose to window for browser context
+if (typeof window !== 'undefined') {
+    window.forecastAdvice = forecastAdvice;
+}

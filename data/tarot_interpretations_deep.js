@@ -1563,4 +1563,6 @@ const tarotDeepInterpretations = {
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { tarotDeepInterpretations };
+} else if (typeof window !== 'undefined') {
+    window.tarotDeepInterpretations = tarotDeepInterpretations;
 }

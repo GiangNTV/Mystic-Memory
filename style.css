@@ -1,3 +1,31 @@
+/* ── GLOBAL FONT SYSTEM ───────────────────────────────────────
+   Body:     Be Vietnam Pro  — hỗ trợ đầy đủ tiếng Việt, sạch, dễ đọc
+   Heading:  Cormorant Garamond — sang trọng, huyền bí, có dấu Việt
+   UI/Label: Josefin Sans — hiện đại, chuyên nghiệp cho labels/buttons
+   ──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Cormorant Garamond', 'Be Vietnam Pro', Georgia, serif;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+}
+
+button, .badge, .tab-btn, .spread-card, .uppercase {
+    font-family: 'Josefin Sans', 'Be Vietnam Pro', sans-serif;
+}
+
 :root {
     --amber-glow: 0 0 20px rgba(245, 158, 11, 0.5);
     --amber-soft: rgba(245, 158, 11, 0.1);
@@ -337,7 +365,7 @@ body {
 
 .planetary-label {
     color: rgba(245, 158, 11, 0.8);
-    font-family: 'Cinzel', serif;
+    font-family: 'Josefin Sans', serif;
 }
 
 /* Planetary Advice Bar */
@@ -360,7 +388,7 @@ body {
 }
 
 #reading-interpretation h5 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 /* Mobile Responsive Improvements */
@@ -587,7 +615,7 @@ body {
 }
 
 .transit-date {
-    font-family: 'Cinzel', serif;
+    font-family: 'Josefin Sans', serif;
     font-weight: bold;
     color: #f59e0b;
     font-size: 0.75rem;
@@ -665,4 +693,110 @@ body {
     border-radius: 9999px;
     font-size: 0.7rem;
     font-weight: 700;
+}
+
+/* ==========================================
+   UX IMPROVEMENTS
+   ========================================== */
+
+/* Scroll-aware floating button */
+#floating-save-btn {
+    /* Remove bounce - handled by ux_patches.js */
+    animation: none !important;
+}
+
+/* Card interpretation - reversed visual */
+.reversed-card-detail {
+    border-color: rgba(99, 102, 241, 0.25) !important;
+    background: linear-gradient(135deg, rgba(99,102,241,0.03), rgba(15,23,42,0.6)) !important;
+}
+
+/* Deep guidance — better expand button */
+button[onclick^="toggleDeepGuidance"] {
+    padding: 8px 12px;
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    border-radius: 10px;
+    width: 100%;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+button[onclick^="toggleDeepGuidance"]:hover {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Jump to summary button */
+#ux-jump-summary {
+    animation: none;
+}
+
+/* Back button */
+#ux-back-btn {
+    opacity: 0.85;
+}
+#ux-back-btn:hover {
+    opacity: 1;
+}
+
+/* Onboarding tooltip */
+#ux-onboarding {
+    animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Journal search */
+#ux-journal-search::placeholder {
+    color: rgba(100, 116, 139, 0.7);
+}
+
+/* Share image button */
+#ux-share-img-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Gallery search */
+#ux-gallery-search::placeholder {
+    color: rgba(100, 116, 139, 0.7);
+}
+
+/* Planetary dropdown on mobile */
+@media (max-width: 768px) {
+    #planetary-summary.flex {
+        min-width: 160px;
+    }
+    #planetary-summary .planetary-item {
+        width: 100%;
+        text-align: left;
+    }
+}
+
+/* Loading shimmer animation */
+@keyframes ux-shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+
+.ai-loading-shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(245,158,11,0.03) 0%,
+        rgba(245,158,11,0.12) 40%,
+        rgba(245,158,11,0.03) 80%
+    );
+    background-size: 400px 100%;
+    animation: ux-shimmer 1.4s ease-in-out infinite;
+}
+
+/* Reversed card border on reading view */
+.mystic-card.reversed-card .card-front {
+    border: 1px solid rgba(99, 102, 241, 0.4) !important;
+    box-shadow: 0 0 15px rgba(99,102,241,0.2), 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+/* Better card detail header */
+[data-card-index] h5 {
+    font-size: 1.1rem;
 }

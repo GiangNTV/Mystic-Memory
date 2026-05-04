@@ -1104,75 +1104,119 @@ async function renderTransitTimeline() {
 function showForecast(time) {
     const forecastEl = document.getElementById('planetary-forecast');
     const forecastText = document.getElementById('forecast-text');
+    const forecastTitle = document.getElementById('forecast-title');
+    if (!forecastEl || !forecastText) return;
 
-    console.log('showForecast called', { forecastEl, forecastText, time, hasAstronomy: typeof Astronomy !== 'undefined', hasForecastAdvice: typeof forecastAdvice !== 'undefined' });
-
-    if (!forecastEl || !forecastText) {
-        console.error('Forecast elements not found');
-        return;
-    }
-
-    // Always show the forecast box
     forecastEl.classList.remove('hidden');
 
-    // Check if forecastAdvice is loaded
-    if (typeof forecastAdvice === 'undefined') {
-        console.error('forecastAdvice not loaded');
-        forecastText.innerHTML = '<span class="text-rose-400">Forecast data not available. Please refresh the page.</span>';
-        return;
-    }
-
-    // Check if Astronomy library is available
-    if (typeof Astronomy === 'undefined') {
-        console.error('Astronomy library not loaded');
-        forecastText.innerHTML = '<span class="text-rose-400">Astronomy engine not loaded. Please refresh the page.</span>';
+    if (typeof forecastAdvice === 'undefined' || typeof Astronomy === 'undefined') {
+        forecastText.innerHTML = '<span class="text-rose-400">Forecast data not available.</span>';
         return;
     }
 
     try {
-        // Validate time parameter
-        if (!time) {
-            throw new Error('Invalid time parameter');
-        }
+        const lang = currentLang || 'en';
 
-        // Calculate Sun's ecliptic longitude using SunPosition
-        const sunPos = Astronomy.SunPosition(time);
-        const sunLon = sunPos.elon;
-        const sunSign = getZodiacSignKey(sunLon);
+        // Get all planet positions for narrative
+        const planetsForForecast = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn'];
+        const positions = {};
+        const SIGNS_EN_F = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+        const SIGNS_VN_F = ['Bạch Dương','Kim Ngưu','Song Tử','Cự Giải','Sư Tử','Xử Nữ','Thiên Bình','Bọ Cạp','Nhân Mã','Ma Kết','Bảo Bình','Song Ngư'];
+        const SIGN_KEYS_F = ['zodiac-aries','zodiac-taurus','zodiac-gemini','zodiac-cancer','zodiac-leo','zodiac-virgo','zodiac-libra','zodiac-scorpio','zodiac-sagittarius','zodiac-capricorn','zodiac-aquarius','zodiac-pisces'];
+
+        planetsForForecast.forEach(id => {
+            try {
+                const lon = Astronomy.EclipticLongitude(id, time);
+                const si = Math.floor(((lon % 360) + 360) % 360 / 30) % 12;
+                positions[id] = {
+                    si,
+                    signKey: SIGN_KEYS_F[si],
+                    signName: lang === 'vn' ? SIGNS_VN_F[si] : SIGNS_EN_F[si],
+                    deg: Math.floor(((lon % 360) + 360) % 360 % 30)
+                };
+            } catch(e) {}
+        });
+
         const moonPhase = Astronomy.MoonPhase(time);
-
-        console.log('Forecast data:', { sunLon, sunSign, moonPhase, currentLang });
-
-        // Check if the forecast data exists for this sign
-        if (!forecastAdvice["body-sun"] || !forecastAdvice["body-sun"][sunSign]) {
-            throw new Error(`Forecast data not found for sign: ${sunSign}`);
-        }
-
         const isWaxing = moonPhase < 180;
-        const sunForecast = forecastAdvice["body-sun"][sunSign][currentLang];
-        const moonCycleForecast = forecastAdvice["moon-cycle"][isWaxing ? "waxing" : "waning"][currentLang];
 
-        console.log('Forecast text:', { sunForecast, moonCycleForecast });
-
-        if (!sunForecast || !moonCycleForecast) {
-            throw new Error(`Missing forecast translation for language: ${currentLang}`);
+        // Get base forecast from forecastAdvice (sun position)
+        const sun = positions['Sun'];
+        let baseForecast = '';
+        if (sun && forecastAdvice['body-sun'] && forecastAdvice['body-sun'][sun.signKey]) {
+            baseForecast = forecastAdvice['body-sun'][sun.signKey][lang] || '';
         }
 
-        forecastText.innerHTML = `${sunForecast} ${moonCycleForecast}`;
+        const moonCycleForecast = forecastAdvice['moon-cycle'] && forecastAdvice['moon-cycle'][isWaxing ? 'waxing' : 'waning']
+            ? (forecastAdvice['moon-cycle'][isWaxing ? 'waxing' : 'waning'][lang] || '')
+            : '';
+
+        // Build enriched narrative with specific planet callouts
+        const INFLUENCE_EN = {
+            'Aries':'brings bold initiating energy','Taurus':'grounds energy in patience',
+            'Gemini':'sharpens communication and curiosity','Cancer':'deepens emotional sensitivity',
+            'Leo':'amplifies creative confidence','Virgo':'channels precision and service',
+            'Libra':'seeks harmony and balance','Scorpio':'intensifies depth and transformation',
+            'Sagittarius':'expands toward freedom and vision','Capricorn':'focuses on structure and mastery',
+            'Aquarius':'sparks innovation and independence','Pisces':'deepens spiritual sensitivity'
+        };
+        const INFLUENCE_VN = {
+            'Bạch Dương':'mang đến năng lượng khởi xướng táo bạo','Kim Ngưu':'ổn định bằng sự kiên nhẫn',
+            'Song Tử':'mài sắc giao tiếp và sự tò mò','Cự Giải':'đào sâu sự nhạy cảm cảm xúc',
+            'Sư Tử':'khuếch đại tự tin sáng tạo','Xử Nữ':'kênh hóa sự chính xác và phụng sự',
+            'Thiên Bình':'tìm kiếm hài hòa và cân bằng','Bọ Cạp':'tăng cường chiều sâu và chuyển hóa',
+            'Nhân Mã':'mở rộng hướng đến tự do và tầm nhìn','Ma Kết':'tập trung vào cấu trúc và thành thạo',
+            'Bảo Bình':'khơi dậy đổi mới và độc lập','Song Ngư':'đào sâu sự nhạy cảm tâm linh'
+        };
+
+        function inf(signName) {
+            return lang === 'vn' ? (INFLUENCE_VN[signName] || '') : (INFLUENCE_EN[signName] || '');
+        }
+
+        let additionalInsights = '';
+        const merc = positions['Mercury'];
+        const venus = positions['Venus'];
+        const mars = positions['Mars'];
+        const jupiter = positions['Jupiter'];
+        const saturn = positions['Saturn'];
+
+        if (lang === 'vn') {
+            const parts = [];
+            if (merc) parts.push(`Dựa trên vị trí của <strong>Sao Thủy</strong> ở ${merc.deg}° ${merc.signName}, tư duy và giao tiếp của bạn ${inf(merc.signName)}.`);
+            if (venus) parts.push(`<strong>Sao Kim</strong> đứng ở ${venus.signName} — ${inf(venus.signName)} — định hướng cách bạn trao nhận tình cảm và thẩm mỹ trong giai đoạn này.`);
+            if (mars) parts.push(`<strong>Sao Hỏa</strong> tại ${mars.deg}° ${mars.signName}: nguồn động lực của bạn ${inf(mars.signName)}.`);
+            if (jupiter) parts.push(`Nhìn dài hơn, <strong>Sao Mộc</strong> ở ${jupiter.signName} đang mở rộng và ban phước theo hướng ${inf(jupiter.signName)}.
+                ${saturn ? `Còn <strong>Sao Thổ</strong> ở ${saturn.signName} ${inf(saturn.signName)}, nhắc nhở bạn về tầm quan trọng của kỷ luật.` : ''}`);
+            additionalInsights = parts.join(' ');
+        } else {
+            const parts = [];
+            if (merc) parts.push(`Based on the position of <strong>Mercury</strong> at ${merc.deg}° ${merc.signName}, your thinking and communication ${inf(merc.signName)}.`);
+            if (venus) parts.push(`<strong>Venus</strong> standing in ${venus.signName} — ${inf(venus.signName)} — shapes how you give and receive affection this period.`);
+            if (mars) parts.push(`<strong>Mars</strong> at ${mars.deg}° ${mars.signName}: your motivating drive ${inf(mars.signName)}.`);
+            if (jupiter) parts.push(`Looking further, <strong>Jupiter</strong> in ${jupiter.signName} expands blessings where energy ${inf(jupiter.signName)}.
+                ${saturn ? `Meanwhile, <strong>Saturn</strong> in ${saturn.signName} ${inf(saturn.signName)}, reminding you of the power of discipline.` : ''}`);
+            additionalInsights = parts.join(' ');
+        }
+
+        // Update title
+        if (forecastTitle) {
+            const sunSym = (typeof celestialSymbols !== 'undefined' && celestialSymbols['body-sun']) || '☀';
+            const titleText = lang === 'vn' ? 'Thông Điệp Vũ Trụ Tuần Này' : "This Week's Celestial Message";
+            forecastTitle.innerHTML = `<i data-lucide="sparkles" class="w-5 h-5"></i><span>${titleText}</span>`;
+        }
+
+        forecastText.innerHTML = `
+            <p style="margin-bottom:12px;line-height:1.8;">${baseForecast}</p>
+            ${additionalInsights ? `<div style="padding:12px 14px;background:rgba(99,102,241,0.06);border-left:3px solid rgba(99,102,241,0.4);border-radius:0 10px 10px 0;margin-bottom:12px;">
+                <p style="font-size:12px;color:rgba(203,213,225,0.85);line-height:1.75;margin:0;">${additionalInsights}</p>
+            </div>` : ''}
+            ${moonCycleForecast ? `<p style="font-size:12px;color:rgba(148,163,184,0.8);line-height:1.7;font-style:italic;">${moonCycleForecast}</p>` : ''}
+        `;
         if (typeof lucide !== 'undefined') lucide.createIcons();
-    } catch (e) {
-        console.error("Forecast generation error:", e);
-        let errorMsg = 'Unknown error occurred';
-        if (e) {
-            if (e.message) {
-                errorMsg = e.message;
-            } else if (typeof e === 'string') {
-                errorMsg = e;
-            } else {
-                errorMsg = String(e);
-            }
-        }
-        forecastText.innerHTML = '<span class="text-rose-400">Unable to generate forecast. Error: ' + errorMsg + '</span>';
+
+    } catch(e) {
+        console.error('Forecast error:', e);
+        forecastText.innerHTML = `<span style="color:rgba(248,113,113,0.9);">Unable to generate forecast: ${e.message}</span>`;
     }
 }
 
